@@ -26,7 +26,8 @@ def createProject(projNameSTR):
         "username": userDICT["username"], #Loki 的帳號
         "func": "create_project",
         "data": {
-            "name": projNameSTR #專案名稱
+            "name": projNameSTR, #專案名稱
+            "version": "v267",
         }
     }
 

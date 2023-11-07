@@ -46,25 +46,24 @@ def moreChancesforrunLoki(folderNameSTR):
             with open("{}/{}/{}/{}.py".format(BASEPATH, folderNameSTR, proj_s, proj_s), encoding = "utf-8") as f:
                 content = f.read().replace(
     """        # 依 INPUT_LIMIT 限制批次處理
-            for i in range(0, math.ceil(len(inputLIST) / INPUT_LIMIT)):
-                resultDICT = runLoki(inputLIST[i*INPUT_LIMIT:(i+1)*INPUT_LIMIT], filterLIST=filterLIST, refDICT=resultDICT)
-                if "msg" in resultDICT:
-                    break
-    """,
+        for i in range(0, math.ceil(len(inputLIST) / INPUT_LIMIT)):
+            resultDICT = runLoki(inputLIST[i*INPUT_LIMIT:(i+1)*INPUT_LIMIT], filterLIST=filterLIST, refDICT=resultDICT)
+            if "msg" in resultDICT:
+                break
+""",
     """        # 依 INPUT_LIMIT 限制批次處理
-            count = 0
-            limit = 3
-            for i in range(0, math.ceil(len(inputLIST) / INPUT_LIMIT)):
-                while True:
-                    resultDICT = runLoki(inputLIST[i*INPUT_LIMIT:(i+1)*INPUT_LIMIT], filterLIST=filterLIST, refDICT=resultDICT)
-                    if "msg" not in resultDICT:
-                        break
+        count = 0
+        limit = 3
+        for i in range(0, math.ceil(len(inputLIST) / INPUT_LIMIT)):
+            while True:
+                resultDICT = runLoki(inputLIST[i*INPUT_LIMIT:(i+1)*INPUT_LIMIT], filterLIST=filterLIST, refDICT=resultDICT)
+                if "msg" not in resultDICT:
+                    break
 
-                    count += 1
-                    time.sleep(1)
-                    if count >= limit:
-                        return {"status": False, "msg": resultDICT["msg"]}
-    """)
+                count += 1
+                time.sleep(1)
+                if count >= limit:
+                    return {"status": False, "msg": resultDICT["msg"]}""")
             with open("{}/{}/{}/{}.py".format(BASEPATH, folderNameSTR, proj_s, proj_s), "w", encoding = "utf-8") as f:
                 f.write(content)
 
@@ -92,5 +91,5 @@ if __name__ == "__main__":
     changeLokiResultOutput(folderNameSTR)
 
     ### 如果需要把多給 Loki 幾次跑的機會，可以執行以下兩個 function
-    #moreChancesforrunLoki(folderNameSTR)
-    #addImportTime(folderNameSTR)
+    moreChancesforrunLoki(folderNameSTR)
+    addImportTime(folderNameSTR)
