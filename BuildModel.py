@@ -202,7 +202,7 @@ def buildLokiModel(resDICT, lokiKeySTR, projectNameSTR):
         else:
             tryAgainParseLIST.append(response)
     with open("{}/lawCaseData/tryAgain/firstRound/tryAgainParse_addUtterance_{}.json".format(BASEPATH, projectNameSTR), "a+", encoding="UTF-8") as f:
-        json.dump(tryAgainParseLIST, f, ensure_ascii=False, indent=3)
+        json.dump(tryAgainParseLIST, f, ensure_ascii=False, indent=4)
 
 
 
@@ -241,7 +241,7 @@ if __name__ == "__main__":
         if resultDICT["status"]:
             ## 把需要再處理的句子另外儲存成一個 json 檔案
             with open("{}/lawCaseData/tryAgain/firstRound/tryAgainParse_utterance_{}.json".format(BASEPATH, projSTR), "a+", encoding="UTF-8") as f:
-                json.dump(resultDICT["tryAgainParseUtteranceLIST"], f, ensure_ascii=False, indent=3)
+                json.dump(resultDICT["tryAgainParseUtteranceLIST"], f, ensure_ascii=False, indent=4)
 
             ### 自動輸入intent 和 句子
             buildLokiModel(resultDICT["setResDICT"], projectDICT[projSTR]["loki_key"], projectDICT[projSTR]["project_name"])
