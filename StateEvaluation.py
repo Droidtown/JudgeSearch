@@ -30,7 +30,7 @@ def changeLokiResultOutput(folderNameSTR):
         else:
             print(proj_s)
             with open("{}/{}/{}/{}.py".format(BASEPATH, folderNameSTR, proj_s, proj_s), encoding = "utf-8") as f:
-                content = f.read().replace("lokiResultDICT = {k: [] for k in refDICT}", f"lokiResultDICT = {{\"{proj_s}\":[]}}")
+                content = f.read().replace("lokiResultDICT = {k: [] for k in refDICT}", f"lokiResultDICT = {{\"{proj_s}\":[]}}").replace("globals()[moduleNameSTR] = import_module(modulePathSTR)", "globals()[moduleNameSTR] = import_module(f\"projects.{Path(BASE_PATH).stem}.{modulePathSTR}\")")
             with open("{}/{}/{}/{}.py".format(BASEPATH, folderNameSTR, proj_s, proj_s), "w", encoding = "utf-8") as f:
                 f.write(content)
 
