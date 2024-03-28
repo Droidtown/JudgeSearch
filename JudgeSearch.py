@@ -9,6 +9,7 @@ from multiprocessing import Pool
 from pathlib import Path, os
 from pprint import pprint
 from time import sleep, time
+import sys
 
 from ArticutAPI import Articut
 datePat = re.compile("_\d\d\d\d-\d\d-\d\d")
@@ -16,6 +17,7 @@ datePat = re.compile("_\d\d\d\d-\d\d-\d\d")
 
 execLokiFuncLIST = []
 
+BASEPATH = os.path.dirname(os.path.abspath(__file__))
 try:
     #from dev_99_su4_2.dev_99_su4_2 import execLoki as execLoki99su42
     for modulePath in glob("projects/*/*.py"):
@@ -25,12 +27,23 @@ try:
 except:
     #from .dev_99_su4_2.dev_99_su4_2 import execLoki as execLoki99su42
     for modulePath in glob("projects/*/*.py"):
-        moduleNameSTR = Path(modulePath).stem.replace("_", "")
-        globals()[moduleNameSTR] = getattr(importlib.import_module("." + modulePath.replace(".py", "").replace("/", ".")), "execLoki")
+        if modulePath.endswith("__init__.py"):
+            continue
+        moduleNameSTR = Path(modulePath).stem
+        dirLIST = os.listdir("/Users/robinlin/Documents/Py39/JudgeSearch/projects")
+        for dirname in dirLIST:
+            if dirname == ".DS_Store":
+                continue
+            else:
+                sys.path.append(f"{BASEPATH}/projects/{dirname}")
+        test = "." + modulePath.replace(".py", "").replace("/", ".")
+        globals()[moduleNameSTR] = getattr(importlib.import_module("xying2shi4cai2dying4_100_jyao1su4_3"), "execLoki")
         execLokiFuncLIST.append([moduleNameSTR.replace("execLoki", ""), globals()[moduleNameSTR]])
 
+    print(execLokiFuncLIST)
 
-BASEPATH = os.path.dirname(os.path.abspath(__file__))
+
+
 
 if "eclair" in os.path.expanduser("~"):
     articut = Articut(url="http://127.0.0.1:50266")
@@ -83,13 +96,17 @@ def run(processID, pinyinLIST, judLIST):
     """
     並執行 execLoki 的內容，以便取得所有分數
     """
-    print("#", processID)
-    print(execLokiFuncLIST[processID][0])
+    #print("#", processID)
+    #print(execLokiFuncLIST[processID][0])
 
     ### 計算每一篇的分數
+    print(matchPinyin(pinyinLIST, execLokiFuncLIST[processID][0]))
+    print(execLokiFuncLIST[processID][1](judLIST, filterLIST=matchPinyin(pinyinLIST, execLokiFuncLIST[processID][0])))
     lokiResultDICT = execLokiFuncLIST[processID][1](judLIST,
                                                     refDICT=refDICT,
+                                                    splitLIST=[],
                                                     filterLIST=matchPinyin(pinyinLIST, execLokiFuncLIST[processID][0]))
+    print(lokiResultDICT)
     processResultDICT = {"loki_project": execLokiFuncLIST[processID][0],
                          "result": sum(lokiResultDICT[execLokiFuncLIST[processID][0]])}
     return processResultDICT
@@ -181,6 +198,7 @@ def getPinyin(lv2DICT, inputSTR): #新版
 
 
 def matchPinyin(pinyinLIST, pathSTR):
+    print(pathSTR)
     """
     這個 function 會拿剛剛找到的 pinyinLIST 然後 return 一個 list 可以當作 filterLIST 用
     """
@@ -194,6 +212,7 @@ def matchPinyin(pinyinLIST, pathSTR):
                 resultLIST.append(intentSTR)
 
     resultLIST = list(set(resultLIST))
+    print(resultLIST)
 
     return resultLIST
 
@@ -228,7 +247,7 @@ if __name__ == "__main__":
 
     # 如果已經有現成的資料，可以直接用 inputSTR
     inputSTR = """臺灣苗栗地方法院刑事判決105年度訴字第164號公訴人臺灣苗栗地方法院檢察署檢察官被告謝文男指定辯護人本院公設辯護人蔡文亮上列被告因違反毒品危害防制條例案件，經檢察官提起公訴（105年度毒偵字第305號），又被告於準備程序中就被訴事實為有罪之陳述，經本院合議庭裁定由受命法官獨任行簡式審判程序後，檢察官聲請改依協商程序而為判決，本院判決如下：主文謝文男施用第一級毒品，處有期徒刑拾月。犯罪事實及理由一、本件犯罪事實及證據：除證據部分，補充：被告謝文男於本院準備程序中之自白，餘均引用起訴書之記載（如附件）。二、本件經檢察官與被告於審判外達成協商之合意且被告已認罪，其合意內容為：被告願受科刑範圍為有期徒刑10月。經查，上開協商合意並無刑事訴訟法第455條之4第1項所列情形之一，檢察官聲請改依協商程序而為判決，本院爰不經言詞辯論，於協商合意範圍內為協商判決，合予敘明。三、應適用之法條：刑事訴訟法第273條之1第1項、第455條之2第1項、第455條之4第2項、第455條之8、第454條第2項，毒品危害防制條例第10條第1項。四、附記事項：被告施用第一級毒品海洛因所使用之針筒，為其所有，供犯上開犯罪所用之物，惟未扣案，且被告供稱：使用的針筒已經被我丟掉了等語（見毒偵卷第27頁、本院卷第21頁反面），復無證據證明尚屬存在。衡諸上開器具非違禁物或其他依法應沒收之物，爰不予宣告沒收。五、本判決除有刑事訴訟法第455條之4第1項第1款、第2款、第4款、第6款、第7款所定情形之一，或違反同條第2項規定者外，不得上訴。如有前述例外得上訴之情形，又不服本件判決，得自判決送達後10日內，向本院提出上訴書狀併附理由，上訴於第二審法院。中華民國105年5月26日刑事第二庭法官陳雅菡以上正本證明與原本無異。書記官林義盛中華民國105年5月26日附錄本案論罪科刑法條：毒品危害防制條例第10條施用第一級毒品者，處6月以上5年以下有期徒刑。施用第二級毒品者，處3年以下有期徒刑。"""
-
+    inputSTR = """臺灣臺東地方法院刑事裁定111年度易字第56號公訴人臺灣臺東地方檢察署檢察官被告彭立雄本件被告彭立雄因誣告案件，經檢察官依通常程序起訴，而被告自白犯罪，依刑事訴訟法第449條第1項規定，本院認為宜由受命法官獨任逕以簡易判決處刑，特此裁定。中華民國111年4月25日刑事第二庭審判長法官蔡立群以上正本證明與原本無異。"""
     ## 如果需要前處理，就可以讀取其他原文資料，然後再前處理，以下以「臺灣苗栗地方法院_刑事_原文/刑事裁定_110,訴,414_2022-10-12.json 為例
     #profileLIST = json.load(open("{}/lawCaseData/臺灣苗栗地方法院_刑事_原文/刑事裁定_110,訴,414_2022-10-12.json".format(BASEPATH), encoding="UTF-8"))
     #inputSTR = preprocessing(profileLIST)
@@ -258,7 +277,7 @@ if __name__ == "__main__":
     pool.join()
 
     ### 把分數整理成一個 dict; 分數越高，代表和該篇裁判書越像
-    pprint(resultDICT)
+    #pprint(resultDICT)
 
     ### 確定 resultDICT 裡面都有 "result" 這個 key
     resultCheckedDICT = {}
